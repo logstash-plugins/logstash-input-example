@@ -12,7 +12,7 @@ class LogStash::Inputs::Example < LogStash::Inputs::Base
   config_name "example"
 
   # If undefined, Logstash will complain, even if codec is unused.
-  default :codec, "plain" 
+  default :codec, "plain"
 
   # The message string to use in the event.
   config :message, :validate => :string, :default => "Hello World!"
@@ -28,11 +28,17 @@ class LogStash::Inputs::Example < LogStash::Inputs::Base
   end # def register
 
   def run(queue)
+    @thread = Thread.current
+
     Stud.interval(@interval) do
       event = LogStash::Event.new("message" => @message, "host" => @host)
       decorate(event)
       queue << event
+      break if stop?
     end # loop
   end # def run
 
+  def stop
+    Stud.stop!(@thread)
+  end
 end # class LogStash::Inputs::Example
