@@ -28,13 +28,17 @@ class LogStash::Inputs::Example < LogStash::Inputs::Base
   end # def register
 
   def run(queue)
+    # This plugin uses Stud.interval. Because we want it to be able to stop
+    # cleanly, we need to keep access to the current thread.  It is referenced
+    # in the stop method below.
+    #
+    # Other plugins may require similar access to the current thread.
     @thread = Thread.current
 
     Stud.interval(@interval) do
       event = LogStash::Event.new("message" => @message, "host" => @host)
       decorate(event)
       queue << event
-      break if stop?
     end # loop
   end # def run
 
