@@ -42,7 +42,10 @@ class LogStash::Inputs::Example < LogStash::Inputs::Base
   end # def run
 
   def stop
-    # nothing to do here
-    # in this case it is not necessary to define stop
+    # nothing to do in this case so it is not necessary to define stop
+    # examples of common "stop" tasks:
+    #  * close sockets (unblocking blocking reads/accepts)
+    #  * cleanup temporary files
+    #  * terminate spawned threads
   end
 end # class LogStash::Inputs::Example
