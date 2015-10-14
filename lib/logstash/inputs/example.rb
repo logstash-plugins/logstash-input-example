@@ -28,21 +28,21 @@ class LogStash::Inputs::Example < LogStash::Inputs::Base
   end # def register
 
   def run(queue)
-    # This plugin uses Stud.interval. Because we want it to be able to stop
-    # cleanly, we need to keep access to the current thread.  It is referenced
-    # in the stop method below.
-    #
-    # Other plugins may require similar access to the current thread.
-    @thread = Thread.current
-
-    Stud.interval(@interval) do
+    # we can abort the loop if stop? becomes true
+    while !stop?
       event = LogStash::Event.new("message" => @message, "host" => @host)
       decorate(event)
       queue << event
+      # because the sleep interval can be big, when shutdown happens
+      # we want to be able to abort the sleep
+      # Stud.stoppable_sleep will frequently evaluate the given block
+      # and abort the sleep(@interval) if the return value is true
+      Stud.stoppable_sleep(@interval) { stop? }
     end # loop
   end # def run
 
   def stop
-    Stud.stop!(@thread)
+    # nothing to do here
+    # in this case it is not necessary to define stop
   end
 end # class LogStash::Inputs::Example
