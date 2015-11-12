@@ -1,3 +1,5 @@
+## 2.0.4
+ - Add encoding: utf-8 line to spec file.  This can prevent issues with tests.
 ## 2.0.1
  - Simplify the shutdown implementation a bit for easier understanding
 ## 2.0.0
